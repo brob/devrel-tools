@@ -1,0 +1,14 @@
+---
+import { getStore } from "@netlify/blobs";
+
+export const prerender = false
+
+const { id } = Astro.params
+
+const store = getStore('calculator')
+const savedCalculator = await store.get(id.toString(), {
+    type: "stream"
+}).then(data => console.log(data))
+console.log({savedCalculator})
+
+---
