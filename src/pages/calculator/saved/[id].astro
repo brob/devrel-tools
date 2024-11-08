@@ -1,5 +1,8 @@
 ---
 import { getStore } from "@netlify/blobs";
+import Layout from "../../../layouts/Layout.astro";
+import Card from "../../../components/Card.astro";
+import CaptureForm from "../../../components/CaptureForm";
 
 export const prerender = false
 
@@ -7,8 +10,22 @@ const { id } = Astro.params
 
 const store = getStore('calculator')
 const savedCalculator = await store.get(id.toString(), {
-    type: "stream"
-}).then(data => console.log(data))
+    type: "json"
+})
 console.log({savedCalculator})
 
 ---
+<style>
+    body {
+        color: white;
+    }
+    .link-card {
+        color: white;
+    }
+</style>
+
+<Layout title="">
+    <h1>hi</h1>
+
+    <CaptureForm stored={savedCalculator} />
+    </Layout>

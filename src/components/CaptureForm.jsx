@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { actions } from 'astro:actions';
 import { v4 as uuidv4 } from 'uuid';
+import { navigate } from 'astro:transitions/client';
 
-const CaptureForm = () => {
-    const [memberActivities, setMemberActivities] = useState([{ activity: '', value: 1, impact: 1 }]);
-    const [teamActivities, setTeamActivities] = useState([{ activityName: '', value: 1, reach: 1, effort: 1 }]);
+const CaptureForm = ({stored}) => {
+    const [memberActivities, setMemberActivities] = useState(stored?.memberActivities || [{ activity: '', value: 1, impact: 1 }]);
+    const [teamActivities, setTeamActivities] = useState(stored?.teamActivities || [{ activityName: '', value: 1, reach: 1, effort: 1 }]);
 
     const handleMemberChange = (index, field, value) => {
         const newActivities = [...memberActivities];
@@ -39,25 +40,13 @@ const CaptureForm = () => {
             valueCreation,
             creationToCaptureRatio
         };
-        console.log(JSON.stringify(formData, null, 2));
 
+        
         try {
-            const response = await fetch('/api/store-calculator', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const result = await response.json();
-            // on success redirect to result.id
-            window.location.href =`/calculator/saved/${result.id}`
-            console.log('Success:', result);
+            const {data, error} = await actions.storeCalculator(formData)
+            console.log(data,error)
+            if (error) throw error
+            navigate(`/calculator/saved/${data.id}`)
         } catch (error) {
             console.error('Error:', error);
         }
